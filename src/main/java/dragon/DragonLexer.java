@@ -1,5 +1,7 @@
 package dragon;
 
+import java.time.Period;
+
 public class DragonLexer extends Lexer {
   // the last match position (beyond one)
   private int lastMatchPos = 0;
@@ -20,52 +22,23 @@ public class DragonLexer extends Lexer {
       return Token.EOF;
     }
 
-    Token token;
     if (Character.isWhitespace(peek)) {
-      token = WS();
-    } else if (Character.isLetter(peek)) {
-      token = ID();
-    } else if (Character.isDigit(peek)) {
-      token = NUMBER();
-    } else if (peek == '=') {
-      token = Token.EQ;
-      advance();
-    } else if (peek == '<') {
-      advance();
-      if (peek == '=') {
-        token = Token.LE;
-        advance();
-      } else if (peek == '>') {
-        token = Token.NE;
-        advance();
-      } else {
-        token = Token.LT;
-      }
-    } else if (peek == '>') {
-      advance();
-      if (peek == '=') {
-        token = Token.GE;
-        advance();
-      } else {
-        token = Token.GT;
-      }
-    } else if (peek == '.') {
-      token = Token.DOT;
-      advance();
-    } else if (peek == '+') {
-      token = Token.POS;
-      advance();
-    } else if (peek == '-') {
-      token = Token.NEG;
-      advance();
-    } else {
-      token = new Token(TokenType.UNKNOWN, Character.toString(peek));
-      advance();
+      return WS();
     }
 
-    this.lastMatchPos = pos;
-    return token;
+    if (Character.isLetter(peek)) {
+      return ID();
+    }
+
+    if (Character.isDigit(peek)) {
+      return INT();
+    }
+
+    Token unknown = new Token(TokenType.UNKNOWN, Character.toString(peek));
+    advance();
+    return unknown;
   }
+
 
   private Token NUMBER() {
     advance();
@@ -159,12 +132,10 @@ public class DragonLexer extends Lexer {
     while (Character.isWhitespace(peek)) {
       advance();
     }
-
     return Token.WS;
   }
 
   private Token ID() {
-    // add code below
     StringBuilder sb = new StringBuilder();
 
     do {
@@ -176,7 +147,7 @@ public class DragonLexer extends Lexer {
     if (token == null) {
       return new Token(TokenType.ID, sb.toString());
     }
-
+    
     return token;
   }
 
