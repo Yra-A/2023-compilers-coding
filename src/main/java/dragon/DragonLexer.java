@@ -34,6 +34,36 @@ public class DragonLexer extends Lexer {
       return INT();
     }
 
+    if (peek == '=') {
+      advance();
+      return Token.EQ;
+    }
+
+    if (peek == '<') {
+      // 先往前走判断，看看是不是 <= 或者 <>
+      advance();
+      if (peek == '=') {
+        advance();
+        return Token.LE;
+      } else if (peek == '>') {
+        advance();
+        return Token.NE;
+      } else {
+        return Token.LT;
+      }
+
+      if (peek == '>') {
+        // 先往前走判断，看看是不是 >=
+        advance();
+        if (peek == '=') {
+          advance();
+          return Token.GE;
+        } else {
+          return Token.GT;
+        }
+      }
+    }
+
     Token unknown = new Token(TokenType.UNKNOWN, Character.toString(peek));
     advance();
     return unknown;
@@ -147,12 +177,11 @@ public class DragonLexer extends Lexer {
     if (token == null) {
       return new Token(TokenType.ID, sb.toString());
     }
-    
+
     return token;
   }
 
   private Token INT() {
-    // add code below
     StringBuilder sb = new StringBuilder();
 
     do {
